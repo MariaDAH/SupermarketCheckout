@@ -5,10 +5,9 @@ namespace SupermarketCheckoutTest;
 public class CheckoutTest
 {
   
-  private ICheckout _checkout;
   private Cart _cart;
   private List<Item> _items;
-  private IStrategy _strategy;
+  private IStrategy? _strategy;
   
   [SetUp]
   public void Setup()
@@ -32,8 +31,9 @@ public class CheckoutTest
   public void Prices_Get_ShouldReturnSetValue()
   {
     //Arrange
-    var sut = new Checkout(_cart,  _strategy);
-    List<Price> prices = [
+    var sut = new Checkout(_cart, _strategy);
+    List<Price> prices =
+    [
       Price.Create("A", 50, 3, 130),
       Price.Create("B", 30, 2, 45),
       Price.Create("C", 20, null, null),
@@ -103,7 +103,8 @@ public class CheckoutTest
   {
     //Arrange 
     var sut = new Checkout(_cart, _strategy);
-    List<Price> prices = [
+    List<Price> prices =
+    [
       Price.Create("A", 50, 3, 130),
       Price.Create("B", 30, 2, 45),
       Price.Create("C", 20, null, null),
@@ -123,7 +124,8 @@ public class CheckoutTest
   {
     //Arrange 
     var sut = new Checkout(_cart, _strategy);
-    List<Price> prices = [
+    List<Price> prices =
+    [
       Price.Create("A", 50, 3, 130),
       Price.Create("B", 30, 2, 45),
       Price.Create("C", 20, null, null),
@@ -141,11 +143,12 @@ public class CheckoutTest
   }
   
   [Test]
-  public void Calcuate_TotalPrice_ShouldReturnTotalPrice()
+  public void Calculate_TotalPrice_ShouldReturnTotalPrice()
   {
     //Arrange 
     var sut = new Checkout(_cart, _strategy);
-    List<Price> prices = [
+    List<Price> prices =
+    [
       Price.Create("A", 50, 3, 130),
       Price.Create("B", 30, 2, 45),
       Price.Create("C", 20, null, null),

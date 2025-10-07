@@ -13,7 +13,7 @@ public class Checkout(Cart cart, IStrategy strategy) : ICheckout
     Price.Create("D", 15, null, null)
   ];
 
-  public List<Price> Prices
+  public List<Price>? Prices
   {
     get => _prices;
     set => _prices = value ?? throw new ArgumentNullException(nameof(value));
@@ -21,7 +21,7 @@ public class Checkout(Cart cart, IStrategy strategy) : ICheckout
 
   private Cart _cart = cart;
   
-  public Cart Cart
+  public Cart? Cart
   {
     get => _cart;
     set => _cart = value ?? throw new ArgumentNullException(nameof(value));
