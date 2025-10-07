@@ -6,8 +6,9 @@ public class CheckoutTest
 {
   
   private ICheckout _checkout;
-  private Cart? _cart;
+  private Cart _cart;
   private List<Item> _items;
+  private IStrategy _strategy;
   
   [SetUp]
   public void Setup()
@@ -20,7 +21,7 @@ public class CheckoutTest
   public void Prices_SetNull_ShouldThrowArgumentNullException()
   {
     //Arrange
-    var sut = new Checkout(_cart);
+    var sut = new Checkout(_cart, _strategy);
     
     // Act & Assert
     var exception = Assert.Throws<ArgumentNullException>(() => sut.Prices = null);
@@ -31,7 +32,7 @@ public class CheckoutTest
   public void Prices_Get_ShouldReturnSetValue()
   {
     //Arrange
-    var sut = new Checkout(_cart);
+    var sut = new Checkout(_cart,  _strategy);
     List<Price> prices = [
       Price.Create("A", 50, 3, 130),
       Price.Create("B", 30, 2, 45),
@@ -49,7 +50,7 @@ public class CheckoutTest
   public void Checkout_SetNullCart_ShouldThrowArgumentNullException()
   {
     //Arrange
-    var sut = new Checkout(_cart);
+    var sut = new Checkout(_cart, _strategy);
     
     // Act & Assert
     var exception = Assert.Throws<ArgumentNullException>(() => sut.Cart = null);
@@ -60,7 +61,7 @@ public class CheckoutTest
   public void Scan_InvalidItemCode_ShouldThrowInvalidSKUException()
   {
     //Arrange 
-    var sut = new Checkout(_cart);
+    var sut = new Checkout(_cart, _strategy);
     _items.Add(Item.Create("NoExists"));
     var item = _items[0].SKU;
     
@@ -73,7 +74,7 @@ public class CheckoutTest
   public void ScanItem_ExistsInCart_ShouldIncreaseQuantityByOne()
   {
     //Arrange 
-    var sut = new Checkout(_cart);
+    var sut = new Checkout(_cart, _strategy);
     _items.Add(Item.Create("A"));
     _items.Add(Item.Create("A"));
     
@@ -88,12 +89,54 @@ public class CheckoutTest
   public void ScanItem_DoesNotExistInCart_ShouldAddItemToCart()
   {
     //Arrange 
-    var sut = new Checkout(_cart);
+    var sut = new Checkout(_cart, _strategy);
     _items.Add(Item.Create("A"));
     var result = _items[0];
     
     //Act & Assert
     _items.ForEach(x => sut.Scan(x.SKU));
     Assert.That(_items[0], Is.EqualTo(result));
+  }
+  
+  [Test]
+  public void CalculatePriceWhenPriceInList__UsingIndividualStrategy_ShouldReturnPrice()
+  {
+    //Arrange 
+    var sut = new Checkout(_cart, _strategy);
+    List<Price> prices = [
+      Price.Create("A", 50, 3, 130),
+      Price.Create("B", 30, 2, 45),
+      Price.Create("C", 20, null, null),
+      Price.Create("D", 15, null, null)
+    ];
+    sut.Prices = prices;
+    _items.Add(Item.Create("A"));
+    _items.ForEach(x => sut.Scan(x.SKU));
+    var strategy = new IndividualStrategy(_cart.Items[0], prices);
+    
+    //Act & Assert
+    Assert.That(strategy.CalculatePrice(), Is.EqualTo(50));
+  }
+  
+  [Test]
+  public void CalculatePriceWhenPriceInList__UsingPromoStrategy_ShouldReturnPrice()
+  {
+    //Arrange 
+    var sut = new Checkout(_cart, _strategy);
+    List<Price> prices = [
+      Price.Create("A", 50, 3, 130),
+      Price.Create("B", 30, 2, 45),
+      Price.Create("C", 20, null, null),
+      Price.Create("D", 15, null, null)
+    ];
+    sut.Prices = prices;
+    _items.Add(Item.Create("B"));
+    _items.Add(Item.Create("B"));
+    _items.Add(Item.Create("B"));
+    _items.ForEach(x => sut.Scan(x.SKU));
+    var strategy = new PromoStrategy(_cart.Items[0], prices);
+    
+    //Act & Assert
+    Assert.That(strategy.CalculatePrice(), Is.EqualTo(75));
   }
 }

@@ -1,7 +1,9 @@
 namespace SupermarketCheckout;
 
-public class Checkout(Cart cart) : ICheckout
+public class Checkout(Cart cart, IStrategy strategy) : ICheckout
 {
+  private IStrategy _strategy = strategy;
+  
   private List<Price> _prices = [
     Price.Create("A", 50, 3, 130),
     Price.Create("B", 30, 2, 45),
