@@ -3,7 +3,7 @@ namespace SupermarketCheckout;
 public class PromoStrategy(Item item, List<Price> prices): IStrategy
 {
 
-  public int? CalculatePrice()
+  public int CalculatePrice()
   {
     var price = prices.Find(x => x.SKU == item.SKU);
 
@@ -14,6 +14,6 @@ public class PromoStrategy(Item item, List<Price> prices): IStrategy
     var mod = originalQuantity % quantityPromotion;
     var promo = groupByPromo * pricePromotion;
     promo += (mod * price.UnitPrice);
-    return promo;
+    return promo ?? 0;
   }
 }

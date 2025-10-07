@@ -1,3 +1,5 @@
+using System.Xml.Schema;
+
 namespace SupermarketCheckout;
 
 public class Checkout(Cart cart, IStrategy strategy) : ICheckout
@@ -43,6 +45,24 @@ public class Checkout(Cart cart, IStrategy strategy) : ICheckout
 
   public int GetTotalPrice()
   {
-    throw new NotImplementedException();
+    int totalPrice = 0;
+
+    foreach (var item in _cart.Items)
+    {
+      var quantityPromocion = _prices.Find(x => x.SKU == item.SKU)!.QuantityPromotion;
+      
+      if (quantityPromocion != null && quantityPromocion <= item.Quantity)
+      {
+        var promoStrategy = new PromoStrategy(item, _prices);
+        totalPrice += promoStrategy.CalculatePrice();
+      }
+      else
+      {
+        var inidividualStrategy = new IndividualStrategy(item, _prices);
+        totalPrice += inidividualStrategy.CalculatePrice();
+      }
+    }
+
+    return totalPrice;
   }
 }

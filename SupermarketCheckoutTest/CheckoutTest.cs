@@ -139,4 +139,28 @@ public class CheckoutTest
     //Act & Assert
     Assert.That(strategy.CalculatePrice(), Is.EqualTo(75));
   }
+  
+  [Test]
+  public void Calcuate_TotalPrice_ShouldReturnTotalPrice()
+  {
+    //Arrange 
+    var sut = new Checkout(_cart, _strategy);
+    List<Price> prices = [
+      Price.Create("A", 50, 3, 130),
+      Price.Create("B", 30, 2, 45),
+      Price.Create("C", 20, null, null),
+      Price.Create("D", 15, null, null)
+    ];
+    sut.Prices = prices;
+    _items.Add(Item.Create("B"));
+    _items.Add(Item.Create("B"));
+    _items.Add(Item.Create("B"));
+    _items.Add(Item.Create("A"));
+    _items.Add(Item.Create("C"));
+    _items.ForEach(x => sut.Scan(x.SKU));
+    
+    //Act & Assert
+    Assert.That(sut.GetTotalPrice(), Is.EqualTo(145));
+  }
+  
 }
