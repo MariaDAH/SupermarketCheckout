@@ -68,4 +68,32 @@ public class CheckoutTest
     var exception = Assert.Throws<ArgumentException>(() => sut.Scan(item));
     Assert.That(exception.Message, Is.EqualTo($"{item} is not a valid SKU"));
   }
+  
+  [Test]
+  public void ScanItem_ExistsInCart_ShouldIncreaseQuantityByOne()
+  {
+    //Arrange 
+    var sut = new Checkout(_cart);
+    _items.Add(Item.Create("A"));
+    _items.Add(Item.Create("A"));
+    
+    
+    //Act & Assert
+    _items.ForEach(x => sut.Scan(x.SKU));
+    var cartItem = _cart.Items.FirstOrDefault(x => x.SKU == "A");
+    Assert.That(cartItem!.Quantity, Is.EqualTo(2));
+  }
+  
+  [Test]
+  public void ScanItem_DoesNotExistInCart_ShouldAddItemToCart()
+  {
+    //Arrange 
+    var sut = new Checkout(_cart);
+    _items.Add(Item.Create("A"));
+    var result = _items[0];
+    
+    //Act & Assert
+    _items.ForEach(x => sut.Scan(x.SKU));
+    Assert.That(_items[0], Is.EqualTo(result));
+  }
 }
